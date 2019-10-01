@@ -2,6 +2,7 @@
 package io.prometheus.client;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -33,6 +34,7 @@ public abstract class Collector {
     public final String name;
     public final Type type;
     public final String help;
+    public String escapedHelp = null;
     public final List<Sample> samples;
 
     public MetricFamilySamples(String name, Type type, String help, List<Sample> samples) {
@@ -76,6 +78,7 @@ public abstract class Collector {
       public final String name;
       public final List<String> labelNames;
       public final List<String> labelValues;  // Must have same length as labelNames.
+      public final List<String> escapedLabelValues;
       public final double value;
       public final Long timestampMs;  // It's an epoch format with milliseconds value included (this field is subject to change).
 
@@ -83,6 +86,7 @@ public abstract class Collector {
         this.name = name;
         this.labelNames = labelNames;
         this.labelValues = labelValues;
+        this.escapedLabelValues = new ArrayList<String>(labelValues.size());
         this.value = value;
         this.timestampMs = timestampMs;
       }

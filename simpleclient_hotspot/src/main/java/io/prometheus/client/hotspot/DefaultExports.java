@@ -37,6 +37,7 @@ public class DefaultExports {
     new StandardExports().register(registry);
     new MemoryPoolsExports().register(registry);
     new MemoryAllocationExports().register(registry);
+    new MemoryHeapAfterGC().register(registry);
     new BufferPoolsExports().register(registry);
     new GarbageCollectorExports().register(registry);
     new ThreadExports().register(registry);

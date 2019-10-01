@@ -181,7 +181,7 @@ public class DropwizardExportsTest {
 
         Timer t = metricRegistry.timer("timer");
         Timer.Context time = t.time();
-        Thread.sleep(1L);
+        Thread.sleep(2L);
         time.stop();
         // We slept for 1Ms so we ensure that all timers are above 1ms:
         assertTrue(registry.getSampleValue("timer", new String[]{"quantile"}, new String[]{"0.99"}) > 0.001);
