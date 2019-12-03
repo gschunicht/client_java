@@ -165,6 +165,6 @@ public class Counter extends SimpleCollector<Counter.Child> implements Collector
 
   @Override
   public List<MetricFamilySamples> describe() {
-    return Collections.<MetricFamilySamples>singletonList(new CounterMetricFamily(fullname, help, labelNames));
+    return Collections.<MetricFamilySamples>singletonList(new CounterMetricFamily(fullname, help, escapedHelp, labelNames));
   }
 }

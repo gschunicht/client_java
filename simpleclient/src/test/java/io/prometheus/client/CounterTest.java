@@ -65,6 +65,13 @@ public class CounterTest {
     assertEquals(3.0, getLabelsValue("b").doubleValue(), .001);
   }
 
+
+  @Test
+  public void testHelp() {
+    assertEquals("help", noLabels.help);
+    assertEquals("help", noLabels.escapedHelp );
+  }
+  
   @Test
   public void testCollect() {
     labels.labels("a").inc();

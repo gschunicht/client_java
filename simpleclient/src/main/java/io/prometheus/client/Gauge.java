@@ -321,7 +321,7 @@ public class Gauge extends SimpleCollector<Gauge.Child> implements Collector.Des
 
   @Override
   public List<MetricFamilySamples> describe() {
-    return Collections.<MetricFamilySamples>singletonList(new GaugeMetricFamily(fullname, help, labelNames));
+    return Collections.<MetricFamilySamples>singletonList(new GaugeMetricFamily(fullname, help, escapedHelp, labelNames));
   }
 
   static class TimeProvider {

@@ -365,7 +365,7 @@ public class Summary extends SimpleCollector<Summary.Child> implements Counter.D
 
   @Override
   public List<MetricFamilySamples> describe() {
-    return Collections.<MetricFamilySamples>singletonList(new SummaryMetricFamily(fullname, help, labelNames));
+    return Collections.<MetricFamilySamples>singletonList(new SummaryMetricFamily(fullname, help, escapedHelp, labelNames));
   }
 
 }

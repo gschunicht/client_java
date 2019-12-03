@@ -43,11 +43,22 @@ public class SummaryMetricFamily extends Collector.MetricFamilySamples {
   public SummaryMetricFamily(String name, String help, List<String> labelNames) {
     this(name, help, labelNames, Collections.<Double>emptyList());
   }
+  
+  public SummaryMetricFamily(String name, String help, String escapedHelp, List<String> labelNames) {
+	    this(name, help, escapedHelp, labelNames, Collections.<Double>emptyList());
+	  }
+  
   public SummaryMetricFamily(String name, String help, List<String> labelNames, List<Double>quantiles) {
     super(name, Collector.Type.SUMMARY, help, new ArrayList<Sample>());
     this.labelNames = labelNames;
     this.quantiles = quantiles;
   }
+  
+  public SummaryMetricFamily(String name, String help, String escapedHelp, List<String> labelNames, List<Double>quantiles) {
+	    super(name, Collector.Type.SUMMARY, help, escapedHelp, new ArrayList<Sample>());
+	    this.labelNames = labelNames;
+	    this.quantiles = quantiles;
+	  }
 
   public SummaryMetricFamily addMetric(List<String> labelValues, double count, double sum) {
     return addMetric(labelValues, count, sum, Collections.<Double>emptyList());

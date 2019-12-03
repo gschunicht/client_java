@@ -36,6 +36,8 @@ public class CounterMetricFamilyTest {
     new YourCustomCollector().register(registry);
 
     assertEquals(42.0, registry.getSampleValue("my_counter").doubleValue(), .001);
+
+
     assertEquals(null, registry.getSampleValue("my_other_counter"));
     assertEquals(4.0, registry.getSampleValue("my_other_counter", new String[]{"labelname"}, new String[]{"foo"}).doubleValue(), .001);
     assertEquals(5.0, registry.getSampleValue("my_other_counter", new String[]{"labelname"}, new String[]{"bar"}).doubleValue(), .001);

@@ -49,6 +49,7 @@ import java.util.List;
 public abstract class SimpleCollector<Child> extends Collector {
   protected final String fullname;
   protected final String help;
+  protected final String escapedHelp;
   protected final List<String> labelNames;
 
   protected final ConcurrentMap<List<String>, Child> children = new ConcurrentHashMap<List<String>, Child>();
@@ -145,7 +146,7 @@ public abstract class SimpleCollector<Child> extends Collector {
   protected abstract Child newChild();
 
   protected List<MetricFamilySamples> familySamplesList(Collector.Type type, List<MetricFamilySamples.Sample> samples) {
-    MetricFamilySamples mfs = new MetricFamilySamples(fullname, type, help, samples);
+    MetricFamilySamples mfs = new MetricFamilySamples(fullname, type, help, escapedHelp, samples);
     List<MetricFamilySamples> mfsList = new ArrayList<MetricFamilySamples>(1);
     mfsList.add(mfs);
     return mfsList;
@@ -164,6 +165,8 @@ public abstract class SimpleCollector<Child> extends Collector {
     checkMetricName(fullname);
     if (b.help.isEmpty()) throw new IllegalStateException("Help hasn't been set.");
     help = b.help;
+    escapedHelp = getEscapeHelpString(help);    
+    
     labelNames = Arrays.asList(b.labelNames);
 
     for (String n: labelNames) {
@@ -184,6 +187,7 @@ public abstract class SimpleCollector<Child> extends Collector {
     String name = "";
     String fullname = "";
     String help = "";
+    String escapedHelp = "";
     String[] labelNames = new String[]{};
     // Some metrics require additional setup before the initialization can be done.
     boolean dontInitializeNoLabelsChild;
@@ -209,11 +213,13 @@ public abstract class SimpleCollector<Child> extends Collector {
       this.namespace = namespace;
       return (B)this;
     }
+    
     /**
      * Set the help string of the metric. Required.
      */
     public B help(String help) {
       this.help = help;
+      this.escapedHelp = getEscapeHelpString(help);  
       return (B)this;
     }
     /**

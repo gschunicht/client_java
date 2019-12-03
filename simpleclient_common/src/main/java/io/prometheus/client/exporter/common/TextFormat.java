@@ -24,10 +24,14 @@ public class TextFormat {
       writer.write(metricFamilySamples.name);
       writer.write(' ');
       if (metricFamilySamples.escapedHelp == null) {
-    	  metricFamilySamples.escapedHelp = getEscapedHelp(metricFamilySamples.help);
+    	  writeEscapedHelp(writer, metricFamilySamples.help);
       }
-      
-      writer.write(metricFamilySamples.escapedHelp);
+      else {
+          
+          writer.write(metricFamilySamples.escapedHelp);
+      }
+    	  
+
       writer.write('\n');
 
       writer.write("# TYPE ");
@@ -44,10 +48,11 @@ public class TextFormat {
             writer.write(sample.labelNames.get(i));
             writer.write("=\"");
             if(sample.escapedLabelValues.size() <= i || sample.escapedLabelValues.get(i) == null) {
-            	sample.escapedLabelValues.add(i , getEscapedLabelValue( sample.labelValues.get(i)));
+            	writeEscapedLabelValue(writer,  sample.labelValues.get(i));
             }
-            
-            writer.write(sample.escapedLabelValues.get(i));
+            else {            
+                writer.write(sample.escapedLabelValues.get(i));
+            }
             writer.write("\",");
           }
           writer.write('}');
@@ -63,7 +68,8 @@ public class TextFormat {
     }
   }
 
-  private static void writeEscapedHelp(Writer writer, String s) throws IOException {
+  protected static void writeEscapedHelp(Writer writer, String s) throws IOException {
+	  System.out.println("in write escape");
     for (int i = 0; i < s.length(); i++) {
       char c = s.charAt(i);
       switch (c) {
@@ -79,23 +85,6 @@ public class TextFormat {
     }
   }
   
-  private static String getEscapedHelp(String s)  {
-	  StringBuffer sb = new StringBuffer(s.length());
-	    for (int i = 0; i < s.length(); i++) {
-	      char c = s.charAt(i);
-	      switch (c) {
-	        case '\\':
-	          sb.append("\\\\");
-	          break;
-	        case '\n':
-	          sb.append("\\n");
-	          break;
-	        default:
-	          sb.append(c);
-	      }
-	    }
-	    return sb.toString();
-	  }
 
   private static void writeEscapedLabelValue(Writer writer, String s) throws IOException {
     for (int i = 0; i < s.length(); i++) {
@@ -116,26 +105,7 @@ public class TextFormat {
     }
   }
   
-  private static String getEscapedLabelValue( String s)   {
-	    StringBuffer sb = new StringBuffer(s.length());
-	    for (int i = 0; i < s.length(); i++) {
-	      char c = s.charAt(i);
-	      switch (c) {
-	        case '\\':
-	          sb.append("\\\\");
-	          break;
-	        case '\"':
-	          sb.append("\\\"");
-	          break;
-	        case '\n':
-	          sb.append("\\n");
-	          break;
-	        default:
-	          sb.append(c);
-	      }
-	    }
-	    return sb.toString();
-	  }
+
 
   private static String typeString(Collector.Type t) {
     switch (t) {

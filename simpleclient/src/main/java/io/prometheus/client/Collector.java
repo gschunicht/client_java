@@ -2,6 +2,7 @@
 package io.prometheus.client;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -34,17 +35,26 @@ public abstract class Collector {
     public final String name;
     public final Type type;
     public final String help;
-    public String escapedHelp = null;
+    public final String escapedHelp;
     public final List<Sample> samples;
 
     public MetricFamilySamples(String name, Type type, String help, List<Sample> samples) {
       this.name = name;
       this.type = type;
       this.help = help;
+      this.escapedHelp = getEscapeHelpString(help);
       this.samples = samples;
     }
 
-    @Override
+    public MetricFamilySamples(String name, Type type, String help, String escapedHelp, List<Sample> samples) {
+        this.name = name;
+        this.type = type;
+        this.help = help;
+        this.escapedHelp = escapedHelp;
+        this.samples = samples;
+	}
+
+	@Override
     public boolean equals(Object obj) {
       if (!(obj instanceof MetricFamilySamples)) {
         return false;
@@ -64,6 +74,10 @@ public abstract class Collector {
       hash = 37 * hash + samples.hashCode();
       return hash;
     }
+    
+    public String getHelp()    {
+  	  return help;
+    }
 
     @Override
     public String toString() {
@@ -79,14 +93,14 @@ public abstract class Collector {
       public final List<String> labelNames;
       public final List<String> labelValues;  // Must have same length as labelNames.
       public final List<String> escapedLabelValues;
-      public final double value;
+      public double value;
       public final Long timestampMs;  // It's an epoch format with milliseconds value included (this field is subject to change).
 
       public Sample(String name, List<String> labelNames, List<String> labelValues, double value, Long timestampMs) {
         this.name = name;
         this.labelNames = labelNames;
         this.labelValues = labelValues;
-        this.escapedLabelValues = new ArrayList<String>(labelValues.size());
+        this.escapedLabelValues =  fillEscapedLabelValues(this.labelValues);       
         this.value = value;
         this.timestampMs = timestampMs;
       }
@@ -105,6 +119,10 @@ public abstract class Collector {
         return other.name.equals(name) && other.labelNames.equals(labelNames)
           && other.labelValues.equals(labelValues) && other.value == value
           && ((timestampMs == null && other.timestampMs == null) || (other.timestampMs != null) && (other.timestampMs.equals(timestampMs)));
+      }
+      
+      public void set(double value) {
+    	  this.value = value;
       }
 
       @Override
@@ -126,6 +144,8 @@ public abstract class Collector {
         return "Name: " + name + " LabelNames: " + labelNames + " labelValues: " + labelValues +
           " Value: " + value + " TimestampMs: " + timestampMs;
       }
+      
+
     }
   }
 
@@ -198,6 +218,77 @@ public abstract class Collector {
             SANITIZE_PREFIX_PATTERN.matcher(metricName).replaceFirst("_")
     ).replaceAll("_");
   }
+  
+  /**
+   * Escape strings
+   */
+  protected static String getEscapeHelpString(String helpText) {
+	  
+	  if (helpText != null)
+	  {
+		  if (helpText.length() == 0) {
+			  return "";
+		  }			  
+		  
+		  StringBuffer sb = new StringBuffer(helpText.length()+10);
+		    for (int i = 0; i < helpText.length(); i++) {
+		      char c = helpText.charAt(i);
+		      switch (c) {
+		        case '\\':
+		          sb.append("\\\\");
+		          break;
+		        case '\n':
+		          sb.append("\\n");
+		          break;
+		        default:
+		          sb.append(c);
+		      }
+		    }
+		    return sb.toString();
+	  }
+	  return null;
+		  
+  }
+  
+  private static List<String> fillEscapedLabelValues(List<String>labelValues)
+  {
+	  List<String> escapedLabelVals = new ArrayList<String>(labelValues.size());
+	  
+	  ListIterator<String> iter = labelValues.listIterator();
+	  while (iter.hasNext()) 	  {
+		  String s = iter.next();
+		  if (s == null || s.length() == 0)		  {
+			  escapedLabelVals.add("");
+		  }
+		  else {
+			   escapedLabelVals.add(getEscapedLabelValue(s));
+		  }
+	  }
+	  	  
+	  return escapedLabelVals;
+  }
+  
+  private static String getEscapedLabelValue( String s)   {
+	    StringBuffer sb = new StringBuffer(s.length());
+	    for (int i = 0; i < s.length(); i++) {
+	      char c = s.charAt(i);
+	      switch (c) {
+	        case '\\':
+	          sb.append("\\\\");
+	          break;
+	        case '\"':
+	          sb.append("\\\"");
+	          break;
+	        case '\n':
+	          sb.append("\\n");
+	          break;
+	        default:
+	          sb.append(c);
+	      }
+	    }
+	    return sb.toString();
+	  }
+
 
   /**
    * Throw an exception if the metric label name is invalid.

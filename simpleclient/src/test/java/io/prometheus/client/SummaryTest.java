@@ -88,6 +88,13 @@ public class SummaryTest {
     assertEquals(getLabeledQuantile("a", 0.9), 0.9 * nSamples, 0.01 * nSamples);
     assertEquals(getLabeledQuantile("a", 0.99), 0.99 * nSamples, 0.001 * nSamples);
   }
+  
+  @Test
+  public void testHelp() {
+    assertEquals("help", noLabels.help);
+    assertEquals("help", noLabels.escapedHelp );
+  }
+  
 
   @Test
   public void testMaxAge() throws InterruptedException {

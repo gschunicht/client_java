@@ -30,6 +30,13 @@ public class GaugeTest {
   private double getValue() {
     return registry.getSampleValue("nolabels").doubleValue();
   }
+  
+  @Test
+  public void testHelp() {
+    assertEquals("help", noLabels.help);
+    assertEquals("help", noLabels.escapedHelp );
+  }
+  
 
   @Test
   public void testIncrement() {
